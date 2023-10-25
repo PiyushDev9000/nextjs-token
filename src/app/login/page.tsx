@@ -3,7 +3,7 @@
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-
+import Cookies from 'js-cookie';
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
@@ -18,8 +18,13 @@ const LoginPage: React.FC = () => {
   }, [session]);
   
 
-  
-  console.log(session)
+  const localtoken =  session?.user?.accesstoken
+  localStorage.setItem('Auth-token',localtoken)
+  const token = session?.user?.accesstoken;
+// localStorage.setItem('Auth-token', token);
+Cookies.set('auth_token', token, { expires: 1 }); 
+
+  console.log(token)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

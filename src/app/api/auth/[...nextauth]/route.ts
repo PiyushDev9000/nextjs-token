@@ -26,10 +26,10 @@ export const authOptions: NextAuthOptions = {
               });
               
               
-          console.log("API Response:", data);  // Debugging line
+         // console.log("API Response:", data.token);  
       
           if (data) {
-            return { id: data.id, email: data.email, name: data.username };
+            return { id: data.user.id, email: data.user.email, name: data.user.name, accesstoken:data.token };
           } else {
             return null;
           }
@@ -45,10 +45,31 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    session: async ({session, user}) => {
-      session.user = user;
-      return Promise.resolve(session);
-    },
+    session: async ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+          accesstoken: token.accesstoken // Here
+        }
+      }
+    }
+    ,
+    jwt: async ({ token, user }) => {
+      console.log('JWT Callback', { token, user });
+      if (user) {
+        const u = user as unknown as any;
+        return {
+          ...token,
+          id: u.id,
+          accesstoken: u.accesstoken, // add this line
+          randomKey: u.randomKey
+        };
+      }
+      return token;
+    }
+    
   },
   secret: process.env.NEXTAUTH_URL,
 };

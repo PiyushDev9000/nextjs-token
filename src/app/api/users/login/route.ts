@@ -40,8 +40,10 @@ export async function POST(request: NextRequest){
         const token = await jwt.sign(tokenData, "122bhdbc", {expiresIn: "1d"})
 
         const response = NextResponse.json({
+            user,
             message: "Login successful",
             success: true,
+            token
         })
         console.log(token)
         response.cookies.set("token", token, {
